@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // 테이블 생성하기
-db.pool.query(`CREATE TABLE LISTS (
+db.pool.query(`CREATE TABLE lists (
     id INTEGER AUTO_INCREMENT,
     value TEXT,
     PRIMARY KEY (id)
