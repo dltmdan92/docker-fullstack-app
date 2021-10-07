@@ -1,31 +1,21 @@
-# 언어 플랫폼
 language: generic
 
-# sudo 권한 여부
 sudo: required
 
-# 앱을 도커 환경에서 실행함으로 선언
 services:
   - docker
 
-# 구성된 도커환경에서 Dockerfile.dev를 이용해서 도커 이미지 생성
 before_install:
   - docker build -t seungmoo.lee/react-test-app -f ./frontend/Dockerfile.dev ./frontend
 
-# 생성된 테스트 이미지를 이용해서 테스트 수행하기
 script:
   - docker run -e CI=true seungmoo.lee/react-test-app npm test
 
-# 테스트가 성공했다면, 하나하나의 프로젝트의 운영버전 이미지를 빌드하는 설정을 해주기
 after_success:
-  # 각각의 이미지를 빌드하기
-	# Dockerfile을 사용하기 때문에 -f 부분은 생략해도됨
   - docker build -t seungmoo.lee/docker-frontend ./frontend
   - docker build -t seungmoo.lee/docker-backend ./backend
   - docker build -t seungmoo.lee/docker-nginx ./nginx
-  # 도커 허브에 로그인 (여기에 있는 값들은 travis ci에 별도로 저장되어 있다.)
   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
-  # 빌드된 이미지들을 도커 허브에 push
   - docker push seungmoo.lee/docker-frontend
   - docker push seungmoo.lee/docker-backend
   - docker push seungmoo.lee/docker-nginx
